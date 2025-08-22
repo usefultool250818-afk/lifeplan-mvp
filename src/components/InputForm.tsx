@@ -188,7 +188,7 @@ export default function InputForm({ onRun }: Props) {
       </div>
 
       {/* 住居の切替＆入力（既存） */}
-      <div className="mt-6 grid gap-4 md:grid-cols-5 items-end">
+      <div className="mt-6 grid gap-4 md:grid-cols-5 items-start">
         <label className="block text-sm md:col-span-1">
           住居タイプ
           <select
