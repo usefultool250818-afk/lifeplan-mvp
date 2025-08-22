@@ -1,26 +1,53 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
+/* Base tokens */
+:root { --background: #ffffff; --foreground: #171717; }
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
 }
 
+/* Dark base (背景グラデはlayout.tsxで付与) */
 @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  :root { --background: #0a0a0a; --foreground: #ededed; }
 }
 
+/* Base */
+html, body { height: 100%; }
 body {
-  background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans, ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    Roboto, "Noto Sans JP", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif);
 }
+
+/* Components */
+/* ガラス風カード（qr/moji系の軽さ） */
+.card {
+  @apply rounded-2xl border border-gray-200/70 bg-white/75 backdrop-blur shadow-sm;
+}
+/* セクション（card + パディング） */
+.section {
+  @apply rounded-2xl border border-gray-200/70 bg-white/75 backdrop-blur shadow-sm p-5 md:p-6;
+}
+
+/* 入力（角丸大きめ＋淡いフォーカス） */
+.input {
+  @apply w-full rounded-xl border border-gray-200 bg-white/70 px-3 py-2 text-sm outline-none
+         transition focus:border-blue-400 focus:ring-4 focus:ring-blue-100;
+}
+
+/* ボタン（黒ベタ/ゴーストの2種） */
+.btn {
+  @apply inline-flex items-center justify-center rounded-xl px-4 py-2 text-sm font-medium transition;
+}
+.btn-primary { @apply bg-black text-white hover:opacity-90 active:opacity-80; }
+.btn-ghost   { @apply text-blue-700 hover:bg-blue-50; }
+
+/* テーブル（ヘッダー薄グレー、行ホバー） */
+.table { @apply min-w-[900px] w-full text-sm; }
+.table thead th { @apply sticky top-0 bg-gray-50 font-medium text-left px-3 py-2; }
+.table tbody td { @apply px-3 py-2 border-t; }
+.table tbody tr { @apply bg-white hover:bg-gray-50; }
+
+/* 小さめ補足 */
+.muted { @apply text-xs text-gray-500; }
