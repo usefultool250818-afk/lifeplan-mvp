@@ -81,20 +81,26 @@ export function simulate(hh: Household): YearRow[] {
     const infl = Math.pow(1 + (hh.settings.inflation ?? 0), yearsFromStart);
     const takeHome = Math.max(0, gross - incomeTax - residentTax - socialIns);
 
-    const living =
-      (hh.expenses.living as any).method === "fixed"
-        ? (hh.expenses.living as any).base * infl
-        : takeHome * ((hh.expenses.living as any).ratioOfNet ?? 0.6);
+    // 生活費（← any を使わず、判別可能ユニオンで型絞り込み）
+    const livingSetting = hh.expenses.living;
+    let living = 0;
+    if (livingSetting.method === "fixed") {
+      living = (livingSetting.base ?? 0) * infl;
+    } else {
+      // method === "ratio"
+      const ratio = livingSetting.ratioOfNet ?? 0.6;
+      living = takeHome * ratio;
+    }
 
-    // 住居：タイプ別に型を絞り込む（ここが今回の修正ポイント）
+    // 住居：タイプ別に型を絞り込む
     let housing = 0;
     if (hh.expenses.housing) {
       if (hh.expenses.housing.type === "rent") {
-        const rent = hh.expenses.housing; // 型: { type:"rent"; amount; endYear? }
+        const rent = hh.expenses.housing; // { type:"rent"; amount; endYear? }
         const stillPaying = (rent.endYear ?? 9999) >= year;
         housing = stillPaying ? (rent.amount ?? 0) * infl : 0;
-      } else if (hh.expenses.housing.type === "loan") {
-        const loan = hh.expenses.housing; // 型: { type:"loan"; principal; rate; years; startYear }
+      } else {
+        const loan = hh.expenses.housing; // { type:"loan"; principal; rate; years; startYear }
         const start = loan.startYear ?? hh.settings.startYear;
         const end = start + (loan.years ?? 0) - 1;
         if (year >= start && year <= end) {
